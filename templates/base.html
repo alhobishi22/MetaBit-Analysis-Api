@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محلل رسائل المحافظ</title>
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-gradient-start: #0d6efd;
+            --primary-gradient-mid: #6610f2;
+            --primary-gradient-end: #fd7e14;
+            --yer-color: #28a745;
+            --sar-color: #0d6efd;
+            --usd-color: #6610f2;
+            --jaib-color-start: #0d6efd;
+            --jaib-color-end: #6610f2;
+            --jawali-color-start: #6610f2;
+            --jawali-color-end: #fd7e14;
+            --cash-color-start: #fd7e14;
+            --cash-color-end: #dc3545;
+            --kuraimiimb-color-start: #8b30dd;
+            --kuraimiimb-color-end: #6f18c8;
+            --one-cash-color-start: #fd7e14;
+            --one-cash-color-end: #f8630d;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, var(--primary-gradient-start), var(--primary-gradient-mid));
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-image {
+            height: 40px;
+            margin-left: 10px;
+            background-color: white;
+            padding: 5px;
+            border-radius: 50%;
+            box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .logo-image:hover {
+            transform: scale(1.1);
+        }
+        
+        .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background: linear-gradient(90deg, var(--primary-gradient-mid), var(--primary-gradient-end));
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary-gradient-start), var(--primary-gradient-mid));
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(90deg, var(--primary-gradient-mid), var(--primary-gradient-start));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(90deg, #dc3545, #b02a37);
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(90deg, #b02a37, #dc3545);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .alert {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .currency-yer {
+            color: var(--yer-color);
+        }
+        
+        .currency-sar {
+            color: var(--sar-color);
+        }
+        
+        .currency-usd {
+            color: var(--usd-color);
+        }
+        
+        .transaction-credit {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .transaction-debit {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Wallet specific styling */
+        .card-header.currency-yer {
+            background: linear-gradient(90deg, var(--yer-color), #1a9635);
+        }
+        
+        .card-header.currency-sar {
+            background: linear-gradient(90deg, var(--sar-color), #0a58ca);
+        }
+        
+        .card-header.currency-usd {
+            background: linear-gradient(90deg, var(--usd-color), #4d0cb3);
+        }
+        
+        /* Wallet card styling */
+        .wallet-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .wallet-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .wallet-card .card-header {
+            padding: 15px 20px;
+        }
+        
+        .wallet-jaib .card-header {
+            background: linear-gradient(90deg, var(--jaib-color-start), var(--jaib-color-end));
+        }
+        
+        .wallet-jawali .card-header {
+            background: linear-gradient(90deg, var(--jawali-color-start), var(--jawali-color-end));
+        }
+        
+        .wallet-cash .card-header {
+            background: linear-gradient(90deg, var(--cash-color-start), var(--cash-color-end));
+        }
+        
+        .wallet-kuraimiimb .card-header {
+            background: linear-gradient(90deg, var(--kuraimiimb-color-start), var(--kuraimiimb-color-end));
+        }
+        
+        .wallet-one-cash .card-header {
+            background: linear-gradient(90deg, var(--one-cash-color-start), var(--one-cash-color-end));
+        }
+        
+        /* Wallet header styling */
+        .wallet-header .card {
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .wallet-header .wallet-jaib {
+            background: linear-gradient(90deg, var(--jaib-color-start), var(--jaib-color-end));
+            color: white;
+        }
+        
+        .wallet-header .wallet-jawali {
+            background: linear-gradient(90deg, var(--jawali-color-start), var(--jawali-color-end));
+            color: white;
+        }
+        
+        .wallet-header .wallet-cash {
+            background: linear-gradient(90deg, var(--cash-color-start), var(--cash-color-end));
+            color: white;
+        }
+        
+        /* Currency badge styling */
+        .currency-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: white;
+        }
+        
+        .currency-badge.yer {
+            background-color: var(--yer-color);
+        }
+        
+        .currency-badge.sar {
+            background-color: var(--sar-color);
+        }
+        
+        .currency-badge.usd {
+            background-color: var(--usd-color);
+        }
+        
+        /* Wallet badge styling */
+        .wallet-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: white;
+        }
+        
+        .wallet-badge.jaib {
+            background: linear-gradient(90deg, var(--jaib-color-start), var(--jaib-color-end));
+        }
+        
+        .wallet-badge.jawali {
+            background: linear-gradient(90deg, var(--jawali-color-start), var(--jawali-color-end));
+        }
+        
+        .wallet-badge.cash {
+            background: linear-gradient(90deg, var(--cash-color-start), var(--cash-color-end));
+        }
+        
+        .wallet-badge.kuraimiimb {
+            background: linear-gradient(90deg, var(--kuraimiimb-color-start), var(--kuraimiimb-color-end));
+        }
+        
+        .wallet-badge.one-cash {
+            background: linear-gradient(90deg, var(--one-cash-color-start), var(--one-cash-color-end));
+        }
+        
+        /* Text colors */
+        .text-primary {
+            color: var(--primary-gradient-start) !important;
+        }
+        
+        .text-purple {
+            color: var(--primary-gradient-mid) !important;
+        }
+        
+        .text-orange {
+            color: var(--primary-gradient-end) !important;
+        }
+        
+        /* نمط للفوتر البسيط مع نفس لون الهيدر */
+        .simple-footer {
+            background: linear-gradient(90deg, var(--primary-gradient-start), var(--primary-gradient-mid));
+            color: white;
+            padding: 15px 0;
+            margin-top: 50px;
+            text-align: center;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .card {
+                margin-bottom: 15px;
+            }
+            
+            .logo-image {
+                height: 30px;
+            }
+            
+            .wallet-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        /* تنسيق زر الرئيسية */
+        .home-button {
+            background: linear-gradient(90deg, var(--primary-gradient-start), var(--primary-gradient-mid));
+            color: white !important;
+            padding: 8px 15px !important;
+            border-radius: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .home-button:hover {
+            background: linear-gradient(90deg, var(--primary-gradient-mid), var(--primary-gradient-end));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="شعار MetaBitAnalysis" class="logo-image">
+                MetaBit Analysis
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link home-button" href="{{ url_for('index') }}">
+                            <i class="fas fa-home"></i> الرئيسية
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                            <i class="fas fa-upload"></i> رفع رسائل
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Content Block -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel">رفع رسائل المحافظ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ url_for('upload') }}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="sms_text" class="form-label">نص الرسائل</label>
+                            <textarea class="form-control" id="sms_text" name="sms_text" rows="10" placeholder="الصق رسائل المحافظ هنا..." required></textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> قم بنسخ ولصق رسائل اي محفظة .
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                        <button type="submit" class="btn btn-primary">تحليل الرسائل</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear Data Modal -->
+    <div class="modal fade" id="clearDataModal" tabindex="-1" aria-labelledby="clearDataModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clearDataModalLabel">مسح جميع البيانات</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>هل أنت متأكد من رغبتك في مسح جميع بيانات المعاملات؟ لا يمكن التراجع عن هذا الإجراء.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <form action="{{ url_for('clear_data') }}" method="post">
+                        <button type="submit" class="btn btn-danger">مسح البيانات</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- فوتر مختصر -->
+    <footer class="simple-footer">
+        <div class="container">
+            <small>&copy; {{ now.year }} جميع الحقوق محفوظة لـ MetaBit Analysis</small>
+        </div>
+    </footer>
+
+    <!-- تضمين مكتبة Bootstrap JavaScript من CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    
+    <!-- تأكد من تهيئة المودالات بشكل صحيح -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // استخدام طريقة أكثر أماناً لتهيئة المودالات
+            var modalButtons = document.querySelectorAll('[data-bs-toggle="modal"]');
+            if (modalButtons.length > 0) {
+                console.log('تم العثور على ' + modalButtons.length + ' زر مودال');
+                modalButtons.forEach(function(button) {
+                    button.addEventListener('click', function(e) {
+                        // الحصول على معرف المودال من السمة data-bs-target
+                        var targetModalId = this.getAttribute('data-bs-target');
+                        console.log('تم النقر على زر المودال: ' + targetModalId);
+                        
+                        // التحقق من وجود المودال
+                        var targetModal = document.querySelector(targetModalId);
+                        if (targetModal) {
+                            // استخدام واجهة برمجة التطبيقات المباشرة من Bootstrap
+                            var modal = new bootstrap.Modal(targetModal);
+                            modal.show();
+                        } else {
+                            console.error('لم يتم العثور على المودال: ' + targetModalId);
+                        }
+                    });
+                });
+            } else {
+                console.log('لم يتم العثور على أي زر مودال');
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

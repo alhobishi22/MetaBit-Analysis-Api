@@ -1,0 +1,600 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <!-- تضمين CSS الخاص بـ Bootstrap (في حال لم يُضمّن مسبقًا في base.html) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<!-- رأس المحفظة -->
+<div class="wallet-header mb-4">
+    {% if wallet_name == "KuraimiIMB" %}
+    <div class="card" style="background: linear-gradient(90deg, #6610f2, #8b30dd); color: white;">
+    {% elif wallet_name == "ONE Cash" %}
+    <div class="card" style="background: linear-gradient(90deg, #fd7e14, #f8630d); color: white;">
+    {% else %}
+    <div class="card" style="background: linear-gradient(90deg, #0d6efd, #0b5ed7); color: white;">
+    {% endif %}
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-1" style="color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                        محفظة {{ wallet_name }}
+                    </h3>
+                    <p class="mb-0" style="color: rgba(255,255,255,0.8);">
+                        عرض تفاصيل وإحصائيات المحفظة
+                    </p>
+                </div>
+                <div class="wallet-actions">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadWalletModal">
+                        <i class="fas fa-upload"></i> رفع رسائل
+                    </button>
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#clearWalletDataModal">
+                        <i class="fas fa-trash"></i> مسح البيانات
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- بطاقات ملخص العملات -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">ملخص العملات</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- بطاقة ريال يمني -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header text-center currency-yer">
+                                <h5 class="mb-0" style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                                    ريال يمني (YER)
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>إجمالي الإضافات</span>
+                                        <span class="transaction-credit">
+                                            {% if summary and wallet_name in summary and 'YER' in summary[wallet_name] %}
+                                                {{ summary[wallet_name].YER.credits|round(2) }}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>إجمالي الخصومات</span>
+                                        <span class="transaction-debit">
+                                            {% if summary and wallet_name in summary and 'YER' in summary[wallet_name] %}
+                                                {{ summary[wallet_name].YER.debits|round(2) }}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center fw-bold">
+                                        <span>الرصيد الصافي</span>
+                                        <span class="{% if summary and wallet_name in summary and 'YER' in summary[wallet_name] %}{{ 'transaction-credit' if summary[wallet_name].YER.net >= 0 else 'transaction-debit' }}{% else %}transaction-credit{% endif %}">
+                                            {% if summary and wallet_name in summary and 'YER' in summary[wallet_name] %}
+                                                {{ summary[wallet_name].YER.net|round(2) }}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- بطاقة ريال سعودي -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header text-center currency-sar">
+                                <h5 class="mb-0" style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                                    ريال سعودي (SAR)
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>إجمالي الإضافات</span>
+                                        <span class="transaction-credit">
+                                            {% if summary and wallet_name in summary and 'SAR' in summary[wallet_name] %}
+                                                {{ summary[wallet_name].SAR.credits|round(2) }}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>إجمالي الخصومات</span>
+                                        <span class="transaction-debit">
+                                            {% if summary and wallet_name in summary and 'SAR' in summary[wallet_name] %}
+                                                {{ summary[wallet_name].SAR.debits|round(2) }}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center fw-bold">
+                                        <span>الرصيد الصافي</span>
+                                        <span class="{% if summary and wallet_name in summary and 'SAR' in summary[wallet_name] %}{{ 'transaction-credit' if summary[wallet_name].SAR.net >= 0 else 'transaction-debit' }}{% else %}transaction-credit{% endif %}">
+                                            {% if summary and wallet_name in summary and 'SAR' in summary[wallet_name] %}
+                                                {{ summary[wallet_name].SAR.net|round(2) }}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- بطاقة دولار أمريكي -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header text-center currency-usd">
+                                <h5 class="mb-0" style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                                    دولار أمريكي (USD)
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>إجمالي الإضافات</span>
+                                        <span class="transaction-credit">
+                                            {% if summary and wallet_name in summary and 'USD' in summary[wallet_name] %}
+                                                {{ summary[wallet_name].USD.credits|round(2) }}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>إجمالي الخصومات</span>
+                                        <span class="transaction-debit">
+                                            {% if summary and wallet_name in summary and 'USD' in summary[wallet_name] %}
+                                                {{ summary[wallet_name].USD.debits|round(2) }}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center fw-bold">
+                                        <span>الرصيد الصافي</span>
+                                        <span class="{% if summary and wallet_name in summary and 'USD' in summary[wallet_name] %}{{ 'transaction-credit' if summary[wallet_name].USD.net >= 0 else 'transaction-debit' }}{% else %}transaction-credit{% endif %}">
+                                            {% if summary and wallet_name in summary and 'USD' in summary[wallet_name] %}
+                                                {{ summary[wallet_name].USD.net|round(2) }}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- قسم الرسوم البيانية -->
+{% if charts %}
+<div class="row mb-4">
+    {% if charts.transaction_types %}
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">توزيع أنواع المعاملات</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <img src="data:image/png;base64,{{ charts.transaction_types }}" alt="Transaction Types Chart" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if charts.amount_distribution %}
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">توزيع مبالغ المعاملات</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <img src="data:image/png;base64,{{ charts.amount_distribution }}" alt="Amount Distribution Chart" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if charts.timeline %}
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">تطور المعاملات عبر الزمن</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <img src="data:image/png;base64,{{ charts.timeline }}" alt="Transaction Timeline Chart" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- جدول المعاملات -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">سجل المعاملات</h5>
+                <div>
+                    {% if filter_applied %}
+                    <span class="badge bg-info me-2">تم تطبيق الفلترة: {{ filter_count }} معاملة</span>
+                    {% else %}
+                    <span class="badge bg-primary">{{ transactions|length }} معاملة</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                {% if transactions %}
+                <!-- نموذج الفلترة -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">فلترة النتائج</h6>
+                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="{{ 'true' if filter_applied else 'false' }}" aria-controls="filterCollapse">
+                            <i class="fas fa-filter"></i> عرض/إخفاء
+                        </button>
+                    </div>
+                    <div class="collapse {{ 'show' if filter_applied else '' }}" id="filterCollapse">
+                        <div class="card-body">
+                            <form method="get" action="{{ url_for('wallet', wallet_name=wallet_name) }}">
+                                <div class="row g-3">
+                                    <!-- نوع المعاملة -->
+                                    <div class="col-md-3">
+                                        <label for="type" class="form-label">نوع المعاملة</label>
+                                        <select class="form-select" id="type" name="type">
+                                            <option value="">الكل</option>
+                                            <option value="credit" {% if request.args.get('type') == 'credit' %}selected{% endif %}>إضافة</option>
+                                            <option value="debit" {% if request.args.get('type') == 'debit' %}selected{% endif %}>خصم</option>
+                                        </select>
+                                    </div>
+                                    <!-- العملة -->
+                                    <div class="col-md-3">
+                                        <label for="currency" class="form-label">العملة</label>
+                                        <select class="form-select" id="currency" name="currency">
+                                            <option value="">الكل</option>
+                                            <option value="YER" {% if request.args.get('currency') == 'YER' %}selected{% endif %}>ريال يمني (YER)</option>
+                                            <option value="SAR" {% if request.args.get('currency') == 'SAR' %}selected{% endif %}>ريال سعودي (SAR)</option>
+                                            <option value="USD" {% if request.args.get('currency') == 'USD' %}selected{% endif %}>دولار أمريكي (USD)</option>
+                                        </select>
+                                    </div>
+                                    <!-- الطرف المقابل -->
+                                    <div class="col-md-6">
+                                        <label for="counterparty" class="form-label">الطرف المقابل</label>
+                                        <input type="text" class="form-control" id="counterparty" name="counterparty" value="{{ request.args.get('counterparty', '') }}" placeholder="اسم أو جزء من اسم الطرف المقابل">
+                                    </div>
+                                    <!-- تاريخ البداية -->
+                                    <div class="col-md-3">
+                                        <label for="date_from" class="form-label">من تاريخ</label>
+                                        <input type="date" class="form-control" id="date_from" name="date_from" value="{{ request.args.get('date_from', '') }}">
+                                    </div>
+                                    <!-- تاريخ النهاية -->
+                                    <div class="col-md-3">
+                                        <label for="date_to" class="form-label">إلى تاريخ</label>
+                                        <input type="date" class="form-control" id="date_to" name="date_to" value="{{ request.args.get('date_to', '') }}">
+                                    </div>
+                                    <!-- الحد الأدنى للمبلغ -->
+                                    <div class="col-md-3">
+                                        <label for="amount_min" class="form-label">الحد الأدنى للمبلغ</label>
+                                        <input type="number" class="form-control" id="amount_min" name="amount_min" value="{{ request.args.get('amount_min', '') }}" placeholder="0">
+                                    </div>
+                                    <!-- الحد الأقصى للمبلغ -->
+                                    <div class="col-md-3">
+                                        <label for="amount_max" class="form-label">الحد الأقصى للمبلغ</label>
+                                        <input type="number" class="form-control" id="amount_max" name="amount_max" value="{{ request.args.get('amount_max', '') }}" placeholder="1000000">
+                                    </div>
+                                    <!-- أزرار التحكم -->
+                                    <div class="col-12 text-end">
+                                        <a href="{{ url_for('wallet', wallet_name=wallet_name) }}" class="btn btn-secondary">إعادة تعيين</a>
+                                        <button type="submit" class="btn btn-primary">تطبيق الفلترة</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>الرقم المميز</th>
+                                <th>النوع</th>
+                                <th>المبلغ</th>
+                                <th>العملة</th>
+                                <th>التفاصيل</th>
+                                <th>الطرف المقابل</th>
+                                <th>الرصيد</th>
+                                <th>التاريخ</th>
+                                <th>حالة التأكيد</th>
+                                <th>حالة الطلب</th>
+                                <th>المشرف</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        {{ transaction.transaction_id if transaction.transaction_id else 'غير متوفر' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="{{ 'transaction-credit' if transaction.type == 'credit' else 'transaction-debit' }}">
+                                        {{ 'إضافة' if transaction.type == 'credit' else 'خصم' }}
+                                    </span>
+                                </td>
+                                <td>{{ transaction.amount|round(2) }}</td>
+                                <td class="currency-{{ transaction.currency.lower() }}">{{ transaction.currency }}</td>
+                                <td>{{ transaction.details }}</td>
+                                <td>{{ transaction.counterparty if transaction.counterparty else '-' }}</td>
+                                <td>{{ transaction.balance|round(2) if transaction.balance else '-' }}</td>
+                                <td>
+                                    {% if transaction.timestamp %}
+                                        {% set hour = transaction.timestamp.strftime('%H')|int %}
+                                        {% set minutes = transaction.timestamp.strftime('%M') %}
+                                        {% set seconds = transaction.timestamp.strftime('%S') %}
+                                        {% set date = transaction.timestamp.strftime('%Y-%m-%d') %}
+                                        {% if hour > 12 %}
+                                            {{ '%02d' % (hour - 12) }}:{{ minutes }}:{{ seconds }} م {{ date }}
+                                        {% elif hour == 12 %}
+                                            {{ '%02d' % hour }}:{{ minutes }}:{{ seconds }} م {{ date }}
+                                        {% elif hour == 0 %}
+                                            12:{{ minutes }}:{{ seconds }} ص {{ date }}
+                                        {% else %}
+                                            {{ '%02d' % hour }}:{{ minutes }}:{{ seconds }} ص {{ date }}
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if transaction.is_confirmed %}
+                                        <span class="badge bg-success" title="الرصيد يتطابق مع العمليات السابقة">
+                                            <i class="fas fa-check-circle"></i> مؤكدة
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark" title="الرصيد لا يتطابق مع العمليات السابقة">
+                                            <i class="fas fa-exclamation-triangle"></i> غير مؤكدة
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if transaction.status == 'completed' %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check"></i> مكتملة
+                                        </span>
+                                    {% elif transaction.status == 'rejected' %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times"></i> مرفوضة
+                                        </span>
+                                    {% elif transaction.status == 'failed' %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-exclamation-circle"></i> فاشلة
+                                        </span>
+                                    {% elif transaction.status == 'cancelled' %}
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-ban"></i> ملغية
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-clock"></i> قيد الانتظار
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if transaction.executed_by %}
+                                        {% if transaction.executed_by == 'النظام التلقائي' %}
+                                            <span class="badge bg-primary">
+                                                <i class="fas fa-robot"></i> {{ transaction.executed_by }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-user"></i> {{ transaction.executed_by }}
+                                            </span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form action="{{ url_for('delete_transaction', transaction_id=transaction.id) }}" method="post" style="display:inline;" onsubmit="return confirm('هل أنت متأكد من رغبتك في حذف هذه المعاملة؟')">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i> حذف
+                                        </button>
+                                    </form>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#updateStatusModal{{ transaction.id }}">
+                                        <i class="fas fa-edit"></i> تحديث الحالة
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-receipt fa-4x mb-3 text-muted"></i>
+                    <h4 class="text-muted">لا توجد معاملات لهذه المحفظة</h4>
+                    <p>قم برفع رسائل المحفظة لعرض سجل المعاملات</p>
+                    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#uploadWalletModal">
+                        <i class="fas fa-upload"></i> رفع رسائل
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال رفع الرسائل -->
+<div class="modal fade" id="uploadWalletModal" tabindex="-1" aria-labelledby="uploadWalletModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadWalletModalLabel">رفع رسائل محفظة {{ wallet_name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('upload_wallet', wallet_name=wallet_name) }}" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="sms_text" class="form-label">نص الرسائل</label>
+                        <textarea class="form-control" id="sms_text" name="sms_text" rows="10" placeholder="الصق رسائل المحفظة هنا..." required></textarea>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> قم بنسخ ولصق رسائل محفظة {{ wallet_name }}.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">تحليل الرسائل</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- مودال مسح بيانات المحفظة -->
+<div class="modal fade" id="clearWalletDataModal" tabindex="-1" aria-labelledby="clearWalletDataModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clearWalletDataModalLabel">مسح بيانات محفظة {{ wallet_name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>هل أنت متأكد من رغبتك في مسح بيانات معاملات محفظة {{ wallet_name }}؟</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <form action="{{ url_for('clear_wallet_data', wallet_name=wallet_name) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">مسح البيانات</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('تهيئة أزرار تحديث الحالة...');
+            
+            // طباعة جميع المودالات الموجودة في الصفحة للتشخيص
+            var allModals = document.querySelectorAll('.modal');
+            console.log('عدد المودالات الموجودة في الصفحة: ' + allModals.length);
+            allModals.forEach(function(modal) {
+                console.log('مودال موجود: #' + modal.id);
+            });
+            
+            // تهيئة المودالات يدوياً
+            var updateButtons = document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target^="#updateStatusModal"]');
+            console.log('عدد أزرار تحديث الحالة: ' + updateButtons.length);
+            
+            updateButtons.forEach(function(button) {
+                console.log('زر تحديث الحالة يشير إلى: ' + button.getAttribute('data-bs-target'));
+                
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation(); // منع انتشار الحدث
+                    
+                    var modalId = this.getAttribute('data-bs-target');
+                    console.log('تم النقر على زر المودال: ' + modalId);
+                    
+                    // استخدام طريقة بديلة للعثور على المودال
+                    var modalElement = document.getElementById(modalId.replace('#', ''));
+                    
+                    if (modalElement) {
+                        console.log('تم العثور على المودال: ' + modalId);
+                        try {
+                            var modal = new bootstrap.Modal(modalElement);
+                            modal.show();
+                        } catch (error) {
+                            console.error('خطأ في فتح المودال: ', error);
+                            // طريقة بديلة لفتح المودال
+                            modalElement.classList.add('show');
+                            modalElement.style.display = 'block';
+                            document.body.classList.add('modal-open');
+                            var backdrop = document.createElement('div');
+                            backdrop.className = 'modal-backdrop fade show';
+                            document.body.appendChild(backdrop);
+                        }
+                    } else {
+                        console.error('لم يتم العثور على المودال: ' + modalId);
+                        
+                        // طباعة جميع معرفات المودالات للتشخيص
+                        var modalIds = [];
+                        document.querySelectorAll('.modal').forEach(function(m) {
+                            modalIds.push('#' + m.id);
+                        });
+                        console.log('المودالات المتاحة: ' + modalIds.join(', '));
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block modals %}
+    <!-- مودالات تحديث الحالة: توضع في نهاية الصفحة لضمان تحميلها بعد باقي المحتوى -->
+    {% for transaction in transactions %}
+    <div class="modal fade" id="updateStatusModal{{ transaction.id }}" tabindex="-1" aria-labelledby="updateStatusModalLabel{{ transaction.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateStatusModalLabel{{ transaction.id }}">تحديث حالة الطلب</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ url_for('update_transaction_status', transaction_id=transaction.id) }}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="status{{ transaction.id }}" class="form-label">حالة الطلب</label>
+                            <select class="form-select" id="status{{ transaction.id }}" name="status" required>
+                                <option value="pending" {% if transaction.status == 'pending' %}selected{% endif %}>قيد الانتظار</option>
+                                <option value="completed" {% if transaction.status == 'completed' %}selected{% endif %}>مكتملة</option>
+                                <option value="rejected" {% if transaction.status == 'rejected' %}selected{% endif %}>مرفوضة</option>
+                                <option value="failed" {% if transaction.status == 'failed' %}selected{% endif %}>فاشلة</option>
+                                <option value="cancelled" {% if transaction.status == 'cancelled' %}selected{% endif %}>ملغية</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="executed_by{{ transaction.id }}" class="form-label">المشرف</label>
+                            <input type="text" class="form-control" id="executed_by{{ transaction.id }}" name="executed_by" value="{{ transaction.executed_by or current_user.username }}" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                        <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
+
+{% endblock content %}

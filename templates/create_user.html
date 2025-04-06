@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">لوحة التحكم</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">إنشاء مستخدم جديد</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-white py-3" style="background-image: linear-gradient(to right, #0d6efd, #6610f2);">
+                    <h3 class="mb-0">إنشاء مستخدم جديد</h3>
+                </div>
+                <div class="card-body p-4">
+                    <!-- رسائل الخطأ والتنبيه -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- نموذج إنشاء المستخدم -->
+                    <form method="POST" action="{{ url_for('create_user') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">{{ form.username.label }}</label>
+                                {{ form.username(class="form-control", id="username", placeholder="أدخل اسم المستخدم") }}
+                                {% for error in form.username.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">{{ form.email.label }}</label>
+                                {{ form.email(class="form-control", id="email", placeholder="أدخل البريد الإلكتروني") }}
+                                {% for error in form.email.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">{{ form.password.label }}</label>
+                                {{ form.password(class="form-control", id="password", placeholder="أدخل كلمة المرور") }}
+                                {% for error in form.password.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                                <div class="form-text">يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="confirm_password" class="form-label">{{ form.confirm_password.label }}</label>
+                                {{ form.confirm_password(class="form-control", id="confirm_password", placeholder="أعد إدخال كلمة المرور") }}
+                                {% for error in form.confirm_password.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            {{ form.is_admin(class="form-check-input", id="is_admin") }}
+                            <label class="form-check-label" for="is_admin">{{ form.is_admin.label }}</label>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">إلغاء</a>
+                            {{ form.submit(class="btn text-white", style="background-image: linear-gradient(to right, #6610f2, #fd7e14);") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

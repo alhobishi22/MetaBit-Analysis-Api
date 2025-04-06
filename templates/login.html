@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-white text-center py-3" style="background-image: linear-gradient(to right, #0d6efd, #6610f2);">
+                    <h3 class="mb-0">تسجيل الدخول</h3>
+                </div>
+                <div class="card-body p-4">
+                    <!-- رسائل الخطأ والتنبيه -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- نموذج تسجيل الدخول -->
+                    <form method="POST" action="{{ url_for('login') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">{{ form.username.label }}</label>
+                            {{ form.username(class="form-control", id="username", placeholder="أدخل اسم المستخدم") }}
+                            {% for error in form.username.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">{{ form.password.label }}</label>
+                            {{ form.password(class="form-control", id="password", placeholder="أدخل كلمة المرور") }}
+                            {% for error in form.password.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            {{ form.remember_me(class="form-check-input", id="remember_me") }}
+                            <label class="form-check-label" for="remember_me">{{ form.remember_me.label }}</label>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn text-white", style="background-image: linear-gradient(to right, #6610f2, #fd7e14);") }}
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center py-3 text-white" style="background-image: linear-gradient(to right, #6610f2, #fd7e14);">
+                    <small>MetaBit Analysis - لوحة تحكم المشرف</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

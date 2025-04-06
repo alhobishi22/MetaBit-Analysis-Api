@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4 text-primary fw-bold">لوحة تحكم المشرف</h2>
+            
+            <!-- رسائل النظام -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- لوحات الإحصائيات -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body text-center">
+                            <h1 class="display-4 text-primary fw-bold">{{ total_transactions }}</h1>
+                            <p class="text-muted">إجمالي المعاملات</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header" style="background-image: linear-gradient(to right, #0d6efd, #6610f2); color: white;">
+                            <h5 class="mb-0">المعاملات حسب المحفظة</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">المحفظة</th>
+                                            <th scope="col">عدد المعاملات</th>
+                                            <th scope="col">النسبة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for wallet, count in wallet_counts.items() %}
+                                        <tr>
+                                            <td>{{ wallet }}</td>
+                                            <td>{{ count }}</td>
+                                            <td>
+                                                {% if total_transactions > 0 %}
+                                                    {{ ((count / total_transactions) * 100) | round(1) }}%
+                                                {% else %}
+                                                    0%
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- بطاقات الإجراءات -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header" style="background-image: linear-gradient(to right, #6610f2, #fd7e14); color: white;">
+                            <h5 class="mb-0">إدارة المستخدمين</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('create_user') }}" class="btn btn-primary">
+                                    <i class="fas fa-user-plus"></i> إنشاء مستخدم جديد
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header" style="background-image: linear-gradient(to right, #6610f2, #fd7e14); color: white;">
+                            <h5 class="mb-0">إعدادات النظام</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                <a href="{{ url_for('api_docs') }}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-code"></i> توثيق واجهة برمجة التطبيقات
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-database"></i> إدارة قاعدة البيانات
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-cog"></i> إعدادات عامة
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center gradient-header">
+                <h5 class="mb-0">إعداد تطبيق Forward SMS</h5>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-home"></i> الرئيسية
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>ملاحظة:</strong> يجب أن يكون تطبيق محلل رسائل المحافظ متاحًا على الإنترنت لكي يتمكن تطبيق Forward SMS من الوصول إليه. تم نشر التطبيق على Render ويمكن الوصول إليه عبر الإنترنت.
+                </div>
+                
+                <h4 class="mt-4 mb-3">خطوات إعداد Forward SMS</h4>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header gradient-header-light">
+                                <h5 class="mb-0">الخطوة 1: إنشاء قاعدة في Forward SMS</h5>
+                            </div>
+                            <div class="card-body">
+                                <ol>
+                                    <li>افتح تطبيق Forward SMS على هاتفك</li>
+                                    <li>انقر على "Rules List" ثم "+" لإنشاء قاعدة جديدة</li>
+                                    <li>أدخل اسم القاعدة (مثل "Jaib" أو "Jawali" أو "Cash")</li>
+                                    <li>في قسم المستلمين، انقر على خيار قائمة المستلم واختر "URL"</li>
+                                    <li>انقر على "Edit URL Config" لبدء الإعداد</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header gradient-header-light">
+                                <h5 class="mb-0">الخطوة 2: إعداد URL API</h5>
+                            </div>
+                            <div class="card-body">
+                                <ol>
+                                    <li>حدد طريقة URL، اختر <strong>POST</strong></li>
+                                    <li>أدخل عنوان URL الخاص بتطبيق محلل رسائل المحافظ:</li>
+                                    <div class="alert alert-secondary mt-2 mb-2">
+                                        <code>https://account-deteals.onrender.com/api/receive-sms</code>
+                                    </div>
+                                    <li>لا تحتاج إلى إضافة أي رؤوس (Headers) إضافية</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header gradient-header-light">
+                                <h5 class="mb-0">الخطوة 3: تكوين محتوى الطلب</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>في قسم <strong>Body</strong>، اختر <strong>Templates</strong> وأدخل التنسيق التالي <span class="text-danger">بالضبط</span>:</p>
+                                <div class="alert alert-secondary">
+<pre>{
+  "text": "From: {sender}<br>{msg}"
+}</pre>
+                                </div>
+                                <div class="alert alert-warning">
+                                    <p><strong>ملاحظات هامة:</strong></p>
+                                    <ul>
+                                        <li>استخدم التنسيق بالضبط كما هو موضح في الصورة أعلاه.</li>
+                                        <li>تأكد من وجود <code>&lt;br&gt;</code> بين المرسل والرسالة.</li>
+                                        <li>تأكد من وجود علامات الاقتباس المزدوجة <code>"</code> حول <code>text</code> وقيمتها.</li>
+                                        <li>يجب أن تكون الأقواس <code>{ }</code> بالضبط كما هو موضح.</li>
+                                    </ul>
+                                </div>
+                                
+                                <p>الخصائص المتاحة:</p>
+                                <ul>
+                                    <li><code>{msg}</code>: محتوى الرسالة القصيرة</li>
+                                    <li><code>{sender}</code>: تفاصيل المرسل (مثل Jaib أو Jawali أو Cash)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header gradient-header-light">
+                                <h5 class="mb-0">الخطوة 4: اختبار الإعداد</h5>
+                            </div>
+                            <div class="card-body">
+                                <ol>
+                                    <li>بعد حفظ إعدادات URL، انقر على "Update" ثم "Save" للقاعدة</li>
+                                    <li>اختبر القاعدة بالنقر على "Test Rule"</li>
+                                    <li>في نافذة الاختبار، أدخل:
+                                        <ul>
+                                            <li><strong>Sender:</strong> Jaib (أو Jawali أو Cash حسب نوع المحفظة)</li>
+                                            <li><strong>Message:</strong> أدخل نص رسالة من المحفظة (مثال: اضيف 6845ريال مقابل تحويل مشترك رصيد:1702947.45ريال من مختار صالح محمد ال)</li>
+                                        </ul>
+                                    </li>
+                                    <li>انقر على "Test" لإرسال رسالة اختبار</li>
+                                    <li>تحقق من ظهور المعاملة في لوحة التحكم الرئيسية للتطبيق</li>
+                                </ol>
+                                
+                                <div class="alert alert-info mt-3">
+                                    <i class="fas fa-info-circle"></i>
+                                    <strong>نصيحة:</strong> إذا لم تظهر المعاملة، تأكد من:
+                                    <ul>
+                                        <li>تنسيق البيانات المرسلة بالضبط كما هو موضح أعلاه</li>
+                                        <li>اتصال هاتفك بالإنترنت</li>
+                                        <li>عدم وجود أخطاء في تطبيق Forward SMS</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>تنبيه:</strong> تأكد من أن هاتفك متصل بالإنترنت عند استلام رسائل SMS حتى يتمكن تطبيق Forward SMS من إرسالها إلى التطبيق.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

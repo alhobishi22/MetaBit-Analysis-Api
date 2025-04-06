@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">واجهة برمجة تطبيقات MetaBitAnalysis</h3>
+                </div>
+                <div class="card-body">
+                    <h4>معلومات عامة</h4>
+                    <p>تسمح واجهة برمجة التطبيقات (API) هذه بالوصول إلى بيانات محلل المحافظ بطريقة آمنة ومنظمة. يمكن استخدام هذه الواجهة لبناء تطبيقات وخدمات مخصصة تعتمد على بيانات المعاملات.</p>
+                    
+                    <h5 class="mt-4">المصادقة</h5>
+                    <p>تتطلب جميع طلبات API مفتاح API يتم إرساله في رأس الطلب:</p>
+                    <pre class="bg-light p-3 border rounded"><code>X-API-Key: MetaBit_API_Key_24X7</code></pre>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> ملاحظة: هذا مفتاح اختبار. في بيئة الإنتاج، يجب استخدام مفتاح آمن وعدم مشاركته مع أي شخص.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- API Endpoints -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">نقاط النهاية المتاحة</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Endpoint 1 -->
+                    <div class="endpoint mb-5">
+                        <h5 class="bg-light p-2 rounded">الحصول على قائمة المحافظ</h5>
+                        <div class="mb-2">
+                            <span class="badge bg-success">GET</span>
+                            <code>/api/wallets</code>
+                        </div>
+                        <p>استرجاع قائمة بجميع المحافظ المتاحة في النظام.</p>
+                        
+                        <h6>نموذج الاستجابة:</h6>
+                        <pre class="bg-light p-3 border rounded"><code>{
+  "status": "success",
+  "wallets": ["Jaib", "Jawali", "Cash", "KuraimiIMB", "ONE Cash"],
+  "count": 5
+}</code></pre>
+                    </div>
+                    
+                    <!-- Endpoint 2 -->
+                    <div class="endpoint mb-5">
+                        <h5 class="bg-light p-2 rounded">الحصول على المعاملات</h5>
+                        <div class="mb-2">
+                            <span class="badge bg-success">GET</span>
+                            <code>/api/transactions</code>
+                        </div>
+                        <p>استرجاع قائمة بالمعاملات مع إمكانية التصفية والترتيب.</p>
+                        
+                        <h6>معلمات الاستعلام:</h6>
+                        <ul>
+                            <li><code>wallet</code> - تصفية حسب اسم المحفظة</li>
+                            <li><code>currency</code> - تصفية حسب العملة (YER، SAR، USD)</li>
+                            <li><code>type</code> - نوع المعاملة (credit للإضافة، debit للخصم)</li>
+                            <li><code>start_date</code> - تاريخ البداية (بتنسيق YYYY-MM-DD)</li>
+                            <li><code>end_date</code> - تاريخ النهاية (بتنسيق YYYY-MM-DD)</li>
+                            <li><code>limit</code> - الحد الأقصى لعدد النتائج (الافتراضي: 100)</li>
+                        </ul>
+                        
+                        <h6>نموذج للاستخدام:</h6>
+                        <pre class="bg-light p-3 border rounded"><code>GET /api/transactions?wallet=Jaib&currency=YER&start_date=2025-01-01&limit=50</code></pre>
+                        
+                        <h6>نموذج الاستجابة:</h6>
+                        <pre class="bg-light p-3 border rounded"><code>{
+  "status": "success",
+  "count": 2,
+  "transactions": [
+    {
+      "id": 187,
+      "transaction_id": "TX000187",
+      "wallet": "Jaib",
+      "type": "credit",
+      "amount": 1300.0,
+      "currency": "YER",
+      "details": "إيداع في الحساب",
+      "counterparty": "محمد أحمد",
+      "balance": 4050925.45,
+      "timestamp": "2025-03-15T12:30:45",
+      "is_confirmed": true
+    },
+    {
+      "id": 186,
+      "transaction_id": "TX000186",
+      "wallet": "Jaib",
+      "type": "credit",
+      "amount": 7700.0,
+      "currency": "YER",
+      "details": "إيداع في الحساب",
+      "counterparty": "محمد أحمد",
+      "balance": 4049625.45,
+      "timestamp": "2025-03-10T09:15:20",
+      "is_confirmed": true
+    }
+  ]
+}</code></pre>
+                    </div>
+                    
+                    <!-- Endpoint 3 -->
+                    <div class="endpoint mb-5">
+                        <h5 class="bg-light p-2 rounded">الحصول على معاملات محفظة محددة</h5>
+                        <div class="mb-2">
+                            <span class="badge bg-success">GET</span>
+                            <code>/api/wallets/{wallet_name}/transactions</code>
+                        </div>
+                        <p>استرجاع المعاملات الخاصة بمحفظة محددة مع إمكانية التصفية.</p>
+                        
+                        <h6>معلمات المسار:</h6>
+                        <ul>
+                            <li><code>wallet_name</code> - اسم المحفظة المطلوبة</li>
+                        </ul>
+                        
+                        <h6>معلمات الاستعلام:</h6>
+                        <p>نفس معلمات <code>/api/transactions</code> باستثناء <code>wallet</code></p>
+                        
+                        <h6>نموذج للاستخدام:</h6>
+                        <pre class="bg-light p-3 border rounded"><code>GET /api/wallets/KuraimiIMB/transactions?currency=SAR&limit=10</code></pre>
+                    </div>
+                    
+                    <!-- Endpoint 4 -->
+                    <div class="endpoint">
+                        <h5 class="bg-light p-2 rounded">الحصول على ملخص محفظة</h5>
+                        <div class="mb-2">
+                            <span class="badge bg-success">GET</span>
+                            <code>/api/wallets/{wallet_name}/summary</code>
+                        </div>
+                        <p>استرجاع ملخص مالي لمحفظة محددة مقسم حسب العملات.</p>
+                        
+                        <h6>معلمات المسار:</h6>
+                        <ul>
+                            <li><code>wallet_name</code> - اسم المحفظة المطلوبة</li>
+                        </ul>
+                        
+                        <h6>نموذج الاستجابة:</h6>
+                        <pre class="bg-light p-3 border rounded"><code>{
+  "status": "success",
+  "wallet": "KuraimiIMB",
+  "summary": {
+    "SAR": {
+      "credits": 761.0,
+      "debits": 0.0,
+      "net": 761.0,
+      "latest_balance": 24249.07,
+      "latest_transaction_date": "2025-03-28T12:59:08",
+      "transaction_count": 4
+    }
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Code Examples -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">أمثلة للاستخدام</h4>
+                </div>
+                <div class="card-body">
+                    <h5>مثال JavaScript</h5>
+                    <pre class="bg-light p-3 border rounded"><code>// الوصول إلى المعاملات باستخدام JavaScript/Fetch
+async function getTransactions() {
+  const response = await fetch('http://yourserver:5000/api/transactions?limit=10', {
+    headers: {
+      'X-API-Key': 'MetaBit_API_Key_24X7'
+    }
+  });
+  
+  const data = await response.json();
+  console.log(data);
+  
+  // عرض المعاملات
+  if (data.status === 'success') {
+    data.transactions.forEach(tx => {
+      console.log(`${tx.transaction_id}: ${tx.amount} ${tx.currency}`);
+    });
+  }
+}</code></pre>
+
+                    <h5 class="mt-4">مثال Python</h5>
+                    <pre class="bg-light p-3 border rounded"><code>import requests
+
+# الوصول إلى ملخص محفظة باستخدام Python
+def get_wallet_summary(wallet_name):
+    url = f'http://yourserver:5000/api/wallets/{wallet_name}/summary'
+    headers = {'X-API-Key': 'MetaBit_API_Key_24X7'}
+    
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    
+    if response.status_code == 200:
+        print(f"ملخص محفظة {wallet_name}:")
+        for currency, details in data['summary'].items():
+            print(f"العملة: {currency}")
+            print(f"الرصيد الحالي: {details['latest_balance']}")
+            print(f"صافي المعاملات: {details['net']}")
+            print("-" * 30)
+    else:
+        print(f"خطأ: {data.get('error', 'حدث خطأ غير معروف')}")
+
+# استدعاء الدالة
+get_wallet_summary('KuraimiIMB')</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
